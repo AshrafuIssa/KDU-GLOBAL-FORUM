@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="home.css" type="text/css">
+  <title>KDU Forum</title>
+</head>
+<body>
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="home.html"><span style="color: green;"><span style="border:2px solid white; border-radius: 10px; padding: 5px;">KDU</span>Forum</span></a>
+      </div>
+      <form class="navbar-form navbar-left" action="" id="nav-form">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="search by username or id" id="nav-input">
+        </div>
+        <button type="submit" class="btn btn-default" id="nav-button">Search</button>
+      </form>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="login.html">Logout</a></li>
+        <li><a href="library.html">Library</a></li>
+        <li><a href="profile.html">Profile</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container" style="margin-top:90px">
+    <div class="left-div">
+      <img src="profilepicture.jpg" alt="Profile Picture" class="img-thumbnail rounded-circle">
+      <p class="profile-name"></p>
+    </div>
+    <div class="right-div">
+      <form id="commentForm">
+        <textarea id="comment" class="textarea" placeholder="what's on your mind" required></textarea>
+        <button type="submit" class="button">post</button>
+      </form>
+      <p class="p1"></p>
+      <p class="p2"></p>
+    </div>
+  </div>
+  <div class="container" id="container">
+  </div>
+  <div class="container2"></div>
+
+  <script>
+    const form = document.getElementById('commentForm');
+    const comment = document.getElementById('comment');
+    const container = document.getElementById('container');
+    const id = document.getElementById('name');
+    const comments = document.getElementById('comments');
+    const navForm = document.getElementById('nav-form');
+    const navButton = document.getElementById('nav-button');
+    const navInput = document.getElementById('nav-input');
+    const p1 = document.querySelector('.p1');
+    const p2 = document.querySelector('.p2');
+    const profileName = document.querySelector('.profile-name');
+    const container2 = document.querySelector('.container2');
+
+    fetch('http://localhost:5001/comments')
+    .then(response => response.json())
+    .then(data => {
+      data.forEach(item => {
+        const { name, comment } = item;
+        const commentHTML = `<div class = "mainDiv"><div class="name">${name}</div><br>
+        <div class="comment" >${comment}</div></div>`;
+        container.innerHTML += commentHTML;
+      });
+    })
+    .catch(error => console.log(error));
+
+  navForm.addEventListener('submit', e => {
+    e.preventDefault();
+
+    console.log(navInput.value);
+
+    fetch('http://localhost:5001/search', {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({data: navInput.value}),
+      credentials: 'include',
+    })
+    .then(response => response.json())
+    .then(data => {
+      if(data.status === 'okay'){
+
+        const commentData = data.data;
+        for ( const index in commentData){
+          const name = commentData[index].name;
+          const comment = commentData[index].comment;
+          console.log(name, comment);
+
+          container2.innerHTML += `<div class = "mainDiv"><div class="name">${name}</div><br><div class="comment" >${comment}</div></div>`;
+
+          container.innerHTML = ``;
+          
+        }
+      }
+      else if(data.status === 'error'){
+        container2.innerHTML = `<p>${data.data}</p>`;
+        container.innerHTML = ``;
+      }
+    })
+    .catch(error => console.log(error));
+
+  });
+
+  fetch('http://localhost:5001/session-user')
+  .then(response => response.json())
+  .then(data => {
+    profileName.innerHTML = `<h4>${data}</h4>`;
+  })
+  .catch(error => console.log(error));
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+
+      console.log(comment.value);
+      
+      fetch('http://localhost:5001/home.html', {
+        method: 'POST',
+        headers: {
+          "Content-Type" : "application/json"
+        },
+        body: JSON.stringify({data : comment.value}),
+        credentials: 'include',
+      })
+      .then(response => response.json())
+      .then(data => {
+          p1.innerHTML = `<p>${data.message}</p>`;
+          p2.innerHTML = `<p>"${data.data.comment}"</p>`;
+      })
+      .catch(error => console.log("error on the home.html fetch:"+ error));
+
+    })
+  </script>
+
+</body>
+</html>

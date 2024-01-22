@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="signup.css">
+  <title>Login Page</title>
+  <style>
+    #container{
+      background-color: white;
+      border: none;
+    }
+    #form{
+      background-color: darkslategray;
+      padding: 50px;
+      margin-right: 200px;
+      margin-left: 200px;
+      border: 1px solid black;
+      border-radius: 30px;
+      color: white;
+      margin-top: 100px;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="container" id="container">
+    <h1 style="color: green;"><span style="border:3px solid black; border-radius: 10px;">KDU</span>Forum</h1>
+  <h3 style="font-family: italic; padding-left: 60px; padding-top:5px; " >welcome to KDU Forum<br> Login to your account to explore more <br>ideas and endless materials for free</h3>
+    
+    <form id="form">
+      <h2 style="text-align: center;">SIGNIN TO KDU FORUM</h2>
+      <div class="form-group">
+        <label for="student-id">Student ID</label>
+        <input type="tel" class="form-control" id="id" placeholder="student ID" name="id">
+      </div>
+      <div class="form-group">
+        <label for="pwd">Password:</label>
+        <input type="password" class="form-control" id="pwd" placeholder="Enter password" name="pwd">
+      </div>
+      <button type="submit"  id="submit" style="color: black;">login</button>
+      <p>Not registered? signup here <a href="signup.html">SIGNUP</a></p>
+    </form>
+
+    <h4 style="text-align: right; font-style: italic; ">Feel free to share your<br> thoughts and ideas</h4>
+    
+  </div>
+
+  <script>
+    const container = document.getElementById('container');
+    const id = document.getElementById('id');
+    const password = document.getElementById('pwd');
+    const form = document.getElementById('form');
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+
+      const user = {
+        id : id.value,
+        password : password.value
+      }
+
+      console.log(user);
+
+      fetch('http://localhost:5001/login.html', {
+        method: 'POST',
+        headers: {
+          "Content-Type" : "application/json"
+        },
+        body: JSON.stringify({data:user})
+      })
+      .then(response => {
+        if (response.status === 200) {
+          return response.json();
+        }
+      })
+      .then(data => { 
+
+        if(data.status === 'ok'){
+          container.innerHTML = location.replace('http://localhost:5001/home.html');
+        }
+        else{
+          container.innerHTML = ` <p style="text-align: center;"> ${data.message}</p>`;
+        }
+       
+
+      })
+      .catch(error => console.log("This is the error on the fetch function:" + error));
+    });
+  </script>
+</body>
+</html>

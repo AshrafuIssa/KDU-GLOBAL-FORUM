@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="library.css">
+  <title>Library</title>
+</head>
+<body>
+  <h1 style="color: green; position: fixed;"><span style="border:3px solid black; border-radius: 10px;">KDU</span>Forum</h1>
+  <div class="main">
+    <h1 class="h1">Welcome to KDU Forum Library</h1>
+    <h3 class="h2">See if the book is available for download<br>search by book title</h3>
+    <form class="form">
+      <h3>ONLINE BOOKS FOR SELL(not in oursite)</h3>
+      <label>Book Title</label><br>
+      <input type="text" class="input" placeholder="Title">
+      <button type="submit" class="button">Search</button>
+
+      <div class="results">
+
+      </div>
+
+    </form>
+    <h3>AVAILABLE BOOKS IN OURSITE(available for download in oursite)</h3>
+    <p class="table"></p>
+    <div id="bookList"></div>
+  </div>
+  <script>
+    const form = document.querySelector('.form');
+    const input = document.querySelector('.input');
+    const button = document.querySelector('.button');
+    const results = document.querySelector('.results');
+    const table = document.querySelector('.table');
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      
+      fetch('http://localhost:5001/library' ,{
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ data:input.value})
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data.items);
+        const items = data.items;
+
+        let tableHTML = `
+          <table class="table">
+            <tr>
+              <th>BOOK TITLE</th>
+              <th>SUBTITLE</th>
+              <th>AUTHORS</th>
+              <th>COUNTRY</th>
+              <th>SALEABILITY</th>
+              <th>SEARCHINFO</th>
+            </tr>
+        `;
+
+        Object.entries(items).forEach(([key, value]) => {
+          const titles = value.volumeInfo.title;
+          const subtitle = value.volumeInfo.subtitle || 'subtitle not available';
+          const authors = value.volumeInfo.authors[0];
+          const country = value.saleInfo.country;
+          const saleability = value.saleInfo.saleability;
+          const searchInfo = value.searchInfo.textSnippet;
+
+
+          tableHTML += `
+              <tr>
+                <td>${titles}</td>
+                <td>${subtitle}</td>
+                <td>${authors}</td>
+                <td>${country}</td>
+                <td>${saleability}</td>
+                <td>${searchInfo}</td>
+              </tr>`;
+          
+        })
+
+        tableHTML+= `</table>`;
+        results.innerHTML = tableHTML;
+      })
+      .catch(error => console.log(error));
+    });
+
+  /*fetch('http://localhost:5001/books')
+  .then(response => response.json())
+  .then(data => {
+    
+
+      let tableData = `
+        <table>
+          <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Price</th>
+            <th>Filename</th>
+          </tr>
+        `;
+
+        Object.entries(data).forEach(([key, value]) =>{
+          tableData += `
+        <tr>
+          <td>${value.title}</td>
+          <td>${value.author}</td>
+          <td>${value.price}</td>
+          <td>${value.filename}</td>
+        </tr>`;
+        });
+
+        tableData += `</table>`;
+        table.innerHTML = tableData;
+      console.log(data);
+    })
+  .catch(error => console.log(error));*/
+
+  fetch('http://localhost:5001/books')
+    .then(response => response.json())
+    .then(books => {
+      const bookList = document.getElementById('bookList');
+
+      let bookhtml = `
+      <table>
+        <tr>
+          <th>Title</th>
+          <th>Author</th>
+          <th>Price</th>
+          <th>Availability</th>
+        </tr>
+      `;
+
+      books.forEach(book => {
+        const bookItem = document.createElement('div');
+        bookhtml += `
+          <tr>
+            <td><h3>${book.title}</h3></td>
+            <td>${book.author}</td>
+            <td>${book.price}</td>
+            <td><a style="color: red;" href="http://localhost:5001/uploads/${book.filename}" download>Download</a></td>
+          </tr>
+        `;
+
+        bookList.appendChild(bookItem);
+      });
+      bookhtml += `</table>`;
+      bookList.innerHTML = bookhtml;
+    })
+    .catch(error => console.error(error));
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="signup.css">
+  <title>SignUp Page</title>
+  <style>
+    #container{
+      background-color: white;
+      border: none;
+    }
+  #form{
+    background-color: darkslategray;
+    padding: 50px;
+    margin-right: 200px;
+    margin-left: 200px;
+    border: 1px solid black;
+    border-radius: 30px;
+    color: white;
+    margin-top: 100px;
+  }
+</style>
+</head>
+<body>
+  <div class="container" id="container">
+    <div class="container" id="container">
+      <h1 style="color: green;"><span style="border:3px solid black; border-radius: 10px;">KDU</span>Forum</h1>
+      <h3 style="font-family: italic; padding-left: 60px; padding-top:5px; " >welcome to KDU Forum<br>Signup with your information to explore more <br>ideas and endless materials for free</h3>
+    
+    <form id="form">
+      <h2 style="text-align: center;">SIGNUP FOR KDU FORUM</h2>
+      <div class="form-group">
+        <label for="student-id">Student ID</label>
+        <input type="tel" class="form-control" id="id" placeholder="student ID" name="id">
+      </div>
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" class="form-control" id="email" placeholder="Enter email" name="email">
+      </div>
+      <div class="form-group">
+        <label for="pwd">Password:</label>
+        <input type="password" class="form-control" id="pwd" placeholder="Enter password" name="pwd">
+      </div>
+      <button type="submit"  id="submit" style="color: black;">Submit</button>
+    </form>
+    <h4 style="text-align: right; font-style: italic; ">Feel free to share your<br> thoughts and ideas</h4>
+  </div>
+
+  <script>
+    const container = document.getElementById('container');
+    const form = document.getElementById('form');
+    const id = document.getElementById('id');
+    const email = document.getElementById('email');
+    const password = document.getElementById('pwd');
+    const submit = document.getElementById('submit');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const user = {
+        id: id.value,
+        email : email.value,
+        password : password.value
+      }
+      
+      console.log(user);
+      
+      fetch('http://localhost:5001/signup.html', {
+        method: 'POST',
+        headers: {
+          "Content-Type" : "application/json"
+        },
+        body: JSON.stringify({data:user}),
+      })
+      .then(response => response.json())
+      .then(data => {
+        if(data.status === 'ok'){
+        container.innerHTML = `
+        <p style="text-align: center;"> ${data.message}</p>
+        <p style="text-align: center;">Please go to the login page and signin: <a href = "login.html">SIGNIN</a></p>`;
+        }
+        else if (data.status === 'id'){
+          container.innerHTML = `
+        <p style="text-align: center;"> ${data.message}</p>`;
+        }
+        else if (data.status === 'email'){
+          container.innerHTML = `
+        <p style="text-align: center;"> ${data.message}</p>`;
+        }
+      })
+      .catch(error => console.log("please check careful there is an error" + error))
+    });
+  </script>
+</body>
+</html>

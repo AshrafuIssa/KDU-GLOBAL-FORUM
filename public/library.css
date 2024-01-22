@@ -1,0 +1,38 @@
+body{
+  background-color: white;
+}
+.main{
+    background-color: darkslategray;
+    color: white;
+    border: 1px solid white;
+    border-radius: 20px;
+    margin: auto;
+    width: 60%;
+    padding: 100px;
+}
+.h1{
+  text-align: center;
+}
+.h2{
+  text-align: center;
+}
+.input{
+  border: 1px solid black;
+  border-radius: 10px;
+  width: 200px;
+  padding: 10px;
+}
+.button{
+  padding: 10px;
+  border: 1px solid black;
+  border-radius: 10px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+th, td {
+  border: 1px solid white;
+  padding: 8px;
+}

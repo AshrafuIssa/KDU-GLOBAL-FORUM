@@ -1,0 +1,44 @@
+.textarea{
+  border-radius: 10px;
+  width: 500px;
+}
+.button{
+  background-color: #1B3358;
+  color: white;
+  border: 1px solid black;
+  border-radius: 7px;
+}
+.img-thumbnail{
+  height: 50px;
+  width: 50px;
+  margin-right: 15px;
+  border-radius: 50%;
+}
+.left-div {
+  float: left;
+}
+
+.right-div {
+  float: left;
+}
+.mainDiv {
+  border: 1px solid black;
+  border-radius: 15px;
+  background-color: darkslategrey;
+  color: white;
+  margin-bottom: 10px;
+  padding-left: 15px;
+  font-size: large;
+}
+.comment{
+  border: 1px solid white;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 20px;
+  margin-left: 50px;
+  margin-right: 70px;
+}
+.container2{
+  margin-left: 50px;
+  margin-right: 70px;
+}

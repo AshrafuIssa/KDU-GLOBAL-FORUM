@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="profile.css">
+    
+</head>
+<body>
+  <h1 style="color: green; position: fixed;"><span style="border:3px solid black; border-radius: 10px;">KDU</span>Forum</h1>
+
+  <div class="main">
+    <div class="headers">
+      <h2 class="profile-name"></h2>
+    <img src="profilepicture.jpg" alt="Profile Picture" class="img-thumbnail rounded-circle">
+      <p class="picture-name"></p>
+    </div>
+
+    <div class="post-section">
+        <h3>Post a Comment or Picture</h3>
+        <form class="comment-form">
+            <label for="postContent">Comment or upload a picture:</label>
+            <textarea id="postContent" name="postContent" placeholder="Type your post here..."></textarea>
+            <input type="submit" value="Post">
+        </form>
+        <p class="p1"></p>
+        <p class="p2"></p>
+    </div>
+
+  
+    <div class="book-section">
+        <h3>Post a learning material or a free Book:</h3>
+        <hr>
+        <form action="/books" class="book-form" method="post" enctype="multipart/form-data" >
+            <label for="bookTitle">Book Title:</label>
+            <input type="text" id="bookTitle" name="title" placeholder="Enter the title of your book" required>
+
+            <label for="bookAuthor">Author:</label>
+            <input type="text" id="bookAuthor" name="author" placeholder="Enter the author's name" required>
+
+            <label for="bookPrice">Price:</label>
+            <input type="number" id="bookPrice" name="price" placeholder="Enter the price" required>
+
+            <input type="file" id="bookFile" name="bookFile" required>
+
+            <input type="submit" class="sellBook" value="Sell Book">
+        </form>
+        <p class="table"></p>
+        <p class="comments"></p>
+    </div>
+  </div>
+
+  <script>
+    const commentForm = document.querySelector('.comment-form');
+    const bookForm = document.querySelector('.book-form');
+    const comment = document.getElementById('postContent');
+    const title = document.getElementById('bookTitle');
+    const author = document.getElementById('bookAuthor');
+    const price = document.getElementById('bookPrice');
+    const file = document.getElementById('bookFile');
+    const table = document.querySelector('.table');
+    const profileName = document.querySelector('.profile-name');
+    const pictureName = document.querySelector('.picture-name');
+    const comments = document.querySelector('.comments');
+    const p1 = document.querySelector('.p1');
+    const p2 = document.querySelector('.p2');
+
+
+    fetch('http://localhost:5001/session-user')
+    .then(response => response.json())
+    .then(data => {
+      profileName.innerHTML = `<h3>Welcome ${data} to your profile</h3>`;
+      pictureName.innerHTML = `<h3>${data}</h3>`;
+    })
+    .catch(error => console.log(error));
+
+    fetch('http://localhost:5001/get-comment')
+    .then(response => response.json())
+    .then(data => {
+
+      data.forEach(item => {
+        const { name, comment } = item;
+        const commentHTML = `<div class = "mainDiv"><div class="name">${name}</div><br><div class="comment" >${comment}</div></div>`;
+        comments.innerHTML += commentHTML;
+      });
+      
+    })
+    .catch(error => console.log(error));
+
+    commentForm.addEventListener('submit', e => {
+      e.preventDefault();
+
+      fetch('http://localhost:5001/home.html', {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({data: comment.value})
+      })
+      .then(response => response.json())
+      .then(data => {
+        p1.innerHTML = `<p>${data.message}</p>`;
+        p2.innerHTML = `<p>"${data.data.comment}"</p>`;
+
+      })
+      .catch(error => console.log(data));
+
+
+    });
+
+    bookForm.addEventListener('submit', e => {
+      e.preventDefault();
+
+
+      const formData = new FormData(bookForm);
+
+      fetch('http://localhost:5001/books', {
+        method: 'POST',
+        body:formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        table.innerHTML = `
+        <table>
+          <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Price</th>
+            <th>Filename</th>
+          </tr>
+          <tr>
+            <td>${data.title}</td>
+            <td>${data.author}</td>
+            <td>${data.price}</td>
+            <td>${data.filename}</td>
+          </tr>
+        </table>
+        `;
+      })
+      .catch(error => console.log(error));
+
+      
+
+    });
+
+  </script>
+
+</body>
+</html>
